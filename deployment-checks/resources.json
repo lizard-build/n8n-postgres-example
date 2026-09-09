@@ -1,0 +1,26 @@
+{
+  "checkedAtUtc": "2026-09-09T13:08:07.734406+00:00",
+  "resources": [
+    {
+      "projectId": "n_7igib0IO3JQjWzGsSym",
+      "type": "app",
+      "name": "n8n-postgres-example",
+      "vcpu": 0.34964376,
+      "memoryGb": 0.5821304296875,
+      "storageGb": 0,
+      "costPerHour": 0.017806583828857504
+    },
+    {
+      "projectId": "n_7igib0IO3JQjWzGsSym",
+      "type": "addon",
+      "name": "n8n-postgres",
+      "addonType": "postgres",
+      "vcpu": 0.015898508,
+      "memoryGb": 0.0476188671875,
+      "storageGb": 1,
+      "costPerHour": 0.0013195631127735001
+    }
+  ],
+  "scope": "Point-in-time resource cost rates, not a monthly invoice. Plan fees, credits, allowances, traffic and other charges still apply.",
+  "sumResourceCostPerHour": 0.019126146941631006
+}

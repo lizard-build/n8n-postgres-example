@@ -1,4 +1,4 @@
-# n8n with Postgres on Lizard
+# n8n with Postgres
 
 Run n8n on Lizard (lizard.build) with Managed Postgres and an authenticated JSON
 webhook. The image pins n8n 2.38.5. The workflow stores a request in Postgres and
@@ -9,6 +9,21 @@ This is a single-instance example for JSON workflows. It does not configure
 queue workers, binary file storage, backups or high availability. Keep the
 n8n encryption key with the database backup. Attach Persistent Volumes when a
 workflow needs local files; this example does not test their durability.
+
+## Verified deployment
+
+On 9 September 2026, n8n 2.38.5 with Postgres 18.6 passed seven HTTP checks
+before a service restart and the same seven checks afterwards. The stored row
+and its creation time stayed the same; the database still held one event.
+The owner could sign in and see the imported workflow.
+
+- [Deployment record](deployment-checks/2026-09-09.json)
+- [Before restart](deployment-checks/before-restart.json) and [after restart](deployment-checks/after-restart.json)
+- [Database before](deployment-checks/database-before.json) and [after](deployment-checks/database-after.json)
+- [Resource snapshot](deployment-checks/resources.json), a measured rate at one point in time, not a monthly bill
+- [Running editor](https://curtain-loud-vl2v.eu-west-lim-a.onlizard.com), which requires the owner login
+
+The tested runtime code is commit `74458b0f93ee3696dc13d0941137f548e8957718`.
 
 ## Configure a service
 
@@ -48,6 +63,8 @@ Set port 5678 and choose the repository Dockerfile explicitly:
 
 ```bash
 lizard service set n8n-postgres-example --set containerPort=5678 --set dockerfilePath=Dockerfile
+# Start the first deployment after configuring the service created with --no-deploy.
+lizard redeploy --service n8n-postgres-example
 ```
 
 The start script derives `WEBHOOK_URL` and `N8N_EDITOR_BASE_URL` from `N8N_HOST`.
@@ -57,24 +74,20 @@ proxy, check its forwarding headers and set `N8N_PROXY_HOPS` to match.
 
 ## Import the example
 
-Sign in to n8n with the owner account. Create the table from `scripts/schema.sql`
-in the same Postgres database. The workflow uses bound query parameters.
-
-Inside the service, `scripts/prepare-credentials.js` creates a private temporary
-credentials file from its environment. Import that file with
-`n8n import:credentials --input=PATH`, then import the workflow with
-`n8n import:workflow --input=/opt/lizard-example/workflows/webhook-to-postgres.json`.
-These commands store credentials encrypted with `N8N_ENCRYPTION_KEY`.
-
-Publish workflow `lizardPostgresExample` in the n8n editor, or use:
+Once the service is ready, run these commands from the linked project directory.
+They create the table and import the two credentials and the workflow. The
+credential script writes a private temporary file inside the service; n8n
+stores the imported credentials encrypted with `N8N_ENCRYPTION_KEY`.
 
 ```bash
-n8n publish:workflow --id=lizardPostgresExample
+lizard ssh --service n8n-postgres-example -- node /opt/lizard-example/scripts/database.js init
+lizard ssh --service n8n-postgres-example -- sh -c 'n8n import:credentials --input="$(node /opt/lizard-example/scripts/prepare-credentials.js)" && n8n import:workflow --input=/opt/lizard-example/workflows/webhook-to-postgres.json && n8n publish:workflow --id=lizardPostgresExample'
+lizard restart --service n8n-postgres-example
 ```
 
-The CLI publication command requires an n8n restart before the running process
-registers the webhook. On this example service, use `lizard restart` after the
-import and publication. Check health and readiness before sending requests.
+The CLI publication command requires a restart before the running process
+registers the webhook. Sign in with the owner account to inspect the imported
+workflow. Check health and readiness before sending requests.
 
 ## Check the webhook
 
@@ -91,6 +104,22 @@ curl --fail-with-body "$N8N_URL/webhook/lizard-postgres-example" \
 Use unique request IDs for separate events. This example stores the first body
 for each ID. A later body with the same ID does not replace it. Send only test
 data to a demonstration deployment.
+
+Run the repeatable checks from this repository with `N8N_URL` and
+`EXAMPLE_WEBHOOK_TOKEN` already set in your local environment:
+
+```bash
+python3 scripts/check-webhook.py --url "$N8N_URL" --output before-restart.json
+lizard restart --service n8n-postgres-example
+# Wait for /healthz/readiness to return 200, then reuse the saved request ID.
+REQUEST_ID=$(python3 -c 'import json; print(json.load(open("before-restart.json"))["requestId"])')
+python3 scripts/check-webhook.py --url "$N8N_URL" --output after-restart.json --request-id "$REQUEST_ID"
+lizard ssh --service n8n-postgres-example -- node /opt/lizard-example/scripts/database.js
+```
+
+Compare both `storedRow` values, including `created_at`, and the database row
+count. The test checks valid authentication, a retry with a changed body,
+missing and wrong keys, and an unknown webhook path.
 
 ## Sources
 

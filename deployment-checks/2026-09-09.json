@@ -1,0 +1,16 @@
+{
+  "checkedAtUtc": "2026-09-09T13:13:54.162255+00:00",
+  "testedCodeCommit": "74458b0f93ee3696dc13d0941137f548e8957718",
+  "n8nVersion": "2.38.5",
+  "postgresVersion": "18.6",
+  "region": "eu-west-lim-a",
+  "port": 5678,
+  "url": "https://curtain-loud-vl2v.eu-west-lim-a.onlizard.com",
+  "checksBeforeRestart": 7,
+  "checksAfterRestart": 7,
+  "allPassed": true,
+  "sameStoredRowAfterRestart": true,
+  "eventRowsAfterRestart": 1,
+  "ownerEditorCheck": "Owner signed in; imported workflow appears in the personal project.",
+  "scope": "Single instance, authenticated JSON workflow. No load, backup restore, local file persistence or monthly billing test."
+}

@@ -1,0 +1,30 @@
+[
+  {
+    "url": "https://lizard.build/deploy/n8n--n8n",
+    "status": 200
+  },
+  {
+    "url": "https://docs.n8n.io/deploy/host-n8n/configure-n8n/choose-n8ns-database",
+    "status": 200
+  },
+  {
+    "url": "https://docs.n8n.io/deploy/host-n8n/configure-n8n/manage-settings-using-environment-variables",
+    "status": 200
+  },
+  {
+    "url": "https://docs.n8n.io/deploy/host-n8n/configure-n8n/use-the-command-line",
+    "status": 200
+  },
+  {
+    "url": "https://github.com/lizard-build/n8n-postgres-example",
+    "status": 200
+  },
+  {
+    "url": "https://github.com/lizard-build/n8n-postgres-example#configure-a-service",
+    "status": 200
+  },
+  {
+    "url": "https://github.com/lizard-build/n8n-postgres-example/tree/main/deployment-checks",
+    "status": 200
+  }
+]

@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "contentSha256": "5732c02b872e75b28d024217da3ce93cf8e3ae9565b3688550c4efd067a98a0a",
+  "checkedAt": "2026-09-09T13:14:36.722205+00:00",
+  "sources": [
+    {
+      "id": "database",
+      "url": "https://docs.n8n.io/deploy/host-n8n/configure-n8n/choose-n8ns-database",
+      "note": "Postgres environment variables and supported database choices.",
+      "checkedAt": "2026-09-09T13:14:36.722205+00:00"
+    },
+    {
+      "id": "owner",
+      "url": "https://docs.n8n.io/deploy/host-n8n/configure-n8n/manage-settings-using-environment-variables",
+      "note": "Owner management using environment variables and bcrypt hash.",
+      "checkedAt": "2026-09-09T13:14:36.722205+00:00"
+    },
+    {
+      "id": "cli",
+      "url": "https://docs.n8n.io/deploy/host-n8n/configure-n8n/use-the-command-line",
+      "note": "Workflow import, publication and required process restart.",
+      "checkedAt": "2026-09-09T13:14:36.722205+00:00"
+    },
+    {
+      "id": "code",
+      "url": "https://github.com/lizard-build/n8n-postgres-example/tree/74458b0f93ee3696dc13d0941137f548e8957718",
+      "note": "Pinned image, credential preparation, bound SQL query and repeatable HTTP checks.",
+      "checkedAt": "2026-09-09T13:14:36.722205+00:00"
+    },
+    {
+      "id": "evidence",
+      "url": "https://github.com/lizard-build/n8n-postgres-example/tree/main/deployment-checks",
+      "note": "Raw checks and database snapshots collected from the deployment on 9 September 2026; seven checks before and after restart, one unchanged event row.",
+      "checkedAt": "2026-09-09T13:14:36.722205+00:00"
+    }
+  ],
+  "claims": [
+    {
+      "text": "The repository pins n8n 2.38.5 and the official image's digest.",
+      "type": "source",
+      "sourceIds": [
+        "code"
+      ]
+    },
+    {
+      "text": "On 9 September 2026, we ran n8n 2.38.5 with Postgres 18.6 in `eu-west-lim-a`. The same seven checks passed before and after restarting the n8n service.",
+      "type": "source",
+      "sourceIds": [
+        "evidence"
+      ]
+    },
+    {
+      "text": "The database held one event after both runs. The JSON body and creation time matched across the restart.",
+      "type": "source",
+      "sourceIds": [
+        "evidence"
+      ]
+    },
+    {
+      "text": "The SQL query binds the request ID and JSON body as values.",
+      "type": "source",
+      "sourceIds": [
+        "code"
+      ]
+    },
+    {
+      "text": "CLI publication changes the database; the running n8n process needs a restart to register that change.",
+      "type": "source",
+      "sourceIds": [
+        "cli"
+      ]
+    }
+  ],
+  "calculations": [],
+  "unresolved": [],
+  "reviewMethod": "Operator review of primary documentation, pinned source code and actual deployment checks. No agent-generated research or benchmark claims."
+}
