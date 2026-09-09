@@ -9,7 +9,8 @@ export DB_TYPE=postgresdb
 export N8N_INSTANCE_OWNER_MANAGED_BY_ENV=true
 export N8N_LISTEN_ADDRESS=0.0.0.0
 export N8N_PORT="${PORT:-5678}"
-export N8N_HOST="${LIZARD_PUBLIC_DOMAIN:?Lizard must assign a public domain}"
+export N8N_HOST="${N8N_HOST:-${LIZARD_PUBLIC_DOMAIN:-}}"
+: "${N8N_HOST:?Set N8N_HOST to the public hostname from lizard domain}"
 export N8N_PROTOCOL=https
 export WEBHOOK_URL="https://${N8N_HOST}/"
 export N8N_EDITOR_BASE_URL="https://${N8N_HOST}/"

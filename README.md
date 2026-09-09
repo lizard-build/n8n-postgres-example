@@ -18,6 +18,7 @@ Use the Lizard CLI with a project you own:
 lizard link --project YOUR_PROJECT
 lizard add postgres --name n8n-postgres --region YOUR_REGION
 lizard add --repo lizard-build/n8n-postgres-example --name n8n-postgres-example --region YOUR_REGION --no-deploy
+lizard domain --service n8n-postgres-example --json
 ```
 
 Set these service variables through the dashboard or `lizard secrets import`.
@@ -25,6 +26,7 @@ Replace `n8n-postgres` in each reference if your database has another name.
 
 | Variable | Value |
 |---|---|
+| `N8N_HOST` | The public hostname returned by `lizard domain`, without `https://` |
 | `DB_TYPE` | `postgresdb` |
 | `DB_POSTGRESDB_HOST` | `${{n8n-postgres.PGHOST}}` |
 | `DB_POSTGRESDB_PORT` | `${{n8n-postgres.PGPORT}}` |
@@ -48,8 +50,9 @@ Set port 5678 and choose the repository Dockerfile explicitly:
 lizard service set n8n-postgres-example --set containerPort=5678 --set dockerfilePath=Dockerfile
 ```
 
-The start script derives `WEBHOOK_URL` and `N8N_EDITOR_BASE_URL` from the domain
-Lizard assigns. It uses HTTPS and one trusted proxy hop. If your network adds a
+The start script derives `WEBHOOK_URL` and `N8N_EDITOR_BASE_URL` from `N8N_HOST`.
+It also accepts `LIZARD_PUBLIC_DOMAIN` when the runtime supplies that value. Set
+`N8N_HOST` explicitly for a repeatable setup. It uses HTTPS and one trusted proxy hop. If your network adds a
 proxy, check its forwarding headers and set `N8N_PROXY_HOPS` to match.
 
 ## Import the example
