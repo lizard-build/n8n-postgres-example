@@ -1,0 +1,101 @@
+{
+  "id": "lizardPostgresExample",
+  "name": "Lizard: authenticated webhook to Postgres",
+  "active": false,
+  "nodes": [
+    {
+      "id": "f60b765d-5d32-4a65-9a81-0b1ec4850e7c",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lizard-postgres-example",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "webhookId": "0e76aa95-70c2-4f12-890b-c8841a1cac0a",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "lizardExampleWebhook",
+          "name": "Example webhook header"
+        }
+      }
+    },
+    {
+      "id": "e4c962f7-9f73-48ea-92fa-1c36d503730e",
+      "name": "Store event",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        260,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO webhook_events (request_id, payload) VALUES ($1, $2::jsonb) ON CONFLICT (request_id) DO UPDATE SET request_id = EXCLUDED.request_id RETURNING request_id, payload, created_at;",
+        "options": {
+          "queryReplacement": "={{ [$json.body.requestId, JSON.stringify($json.body)] }}"
+        }
+      },
+      "credentials": {
+        "postgres": {
+          "id": "lizardExamplePostgres",
+          "name": "Example Postgres"
+        }
+      }
+    },
+    {
+      "id": "ea3f0db0-e2b2-4709-9201-1b8d660a760d",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        520,
+        0
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 200
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Store event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store event": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "all",
+    "saveDataErrorExecution": "all"
+  },
+  "versionId": "9f95d0f1-73b0-42c3-ba6b-7fc413a82977"
+}
